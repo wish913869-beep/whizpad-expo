@@ -1045,7 +1045,7 @@ function zReset(){ zs=1; zx=0; zy=0; zApply(); }
 function zAt(ns,cx,cy){ ns=Math.max(1,Math.min(5,ns)); const r=lbI.getBoundingClientRect(), ox=r.left-zx, oy=r.top-zy;
   const px=(cx-ox-zx)/zs, py=(cy-oy-zy)/zs; zx=cx-ox-px*ns; zy=cy-oy-py*ns; zs=ns; if(zs<=1.01){ zs=1; zx=0; zy=0; } zApply(); }
 function openLb(u){ lbI.src=u; zReset(); $('#lbH').textContent=ZH[lang]; $('#lb').classList.add('on'); }
-lbS.addEventListener('pointerdown',e=>{ lbS.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); tapMoved=false; downAt={x:e.clientX,y:e.clientY,t:e.target};
+lbS.addEventListener('pointerdown',e=>{ try{ lbS.setPointerCapture(e.pointerId); }catch(_){} pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); tapMoved=false; downAt={x:e.clientX,y:e.clientY,t:e.target};
   if(pts.size===2){ const [a,b]=[...pts.values()]; g0={d:Math.hypot(a.x-b.x,a.y-b.y),s:zs}; } });
 lbS.addEventListener('pointermove',e=>{ const p=pts.get(e.pointerId); if(!p) return; const dx=e.clientX-p.x, dy=e.clientY-p.y;
   if(Math.abs(e.clientX-downAt.x)+Math.abs(e.clientY-downAt.y)>8) tapMoved=true;
