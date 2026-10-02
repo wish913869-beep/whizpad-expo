@@ -175,13 +175,39 @@ figcaption{font-size:13px;color:var(--ink2);padding:7px 12px;font-weight:600}
 
 /* ── integrate ── */
 .int-wrap{display:flex;flex-direction:column;justify-content:center;height:100%}
-.int{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.int{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
 .int .c{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:clamp(12px,2vh,18px)}
 .int .c svg{width:32px;height:32px;color:var(--teal);margin-bottom:6px}
 .int .c h3{font-size:clamp(15px,1.5vw,18px);margin-bottom:6px}
 .int .c p{font-size:clamp(13px,calc(.6vw + .7vh),16px);line-height:1.55;color:var(--ink2)}
 .int-wrap .shot img{max-height:calc(var(--avail) * .36)}
 .cap{font-size:13px;color:var(--ink2);margin:8px 2px 0}
+
+/* ── compare ── */
+.cmp{display:flex;flex-direction:column;justify-content:center;height:100%;min-width:0}
+.cmp h2{font-size:var(--t-h2);line-height:1.25;margin-bottom:clamp(10px,2vh,18px)}
+.cmp h2::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:var(--teal);margin-bottom:12px}
+.cmpw{overflow-x:auto;background:#fff;border-radius:14px;box-shadow:var(--shadow)}
+.cmp table{width:100%;border-collapse:collapse;font-size:clamp(13px,calc(.65vw + .75vh),17px);line-height:1.45}
+.cmp th,.cmp td{padding:clamp(8px,1.6vh,14px) 14px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--line)}
+.cmp tbody tr:last-child th,.cmp tbody tr:last-child td{border-bottom:0}
+.cmp thead th{font-size:clamp(14px,calc(.7vw + .8vh),18px);color:var(--ink);background:#f8fafb;width:27%}
+.cmp thead th:first-child{width:19%}
+.cmp thead th small{display:block;font-size:12px;font-weight:500;color:var(--mute);margin-top:2px}
+.cmp tbody th{font-weight:700;color:var(--ink2)}
+.cmp td{color:var(--ink2)}
+.cmp td span{vertical-align:middle}
+.cmp .us{background:var(--teal-s)}
+.cmp thead .us{background:var(--teal);color:#fff}
+.cmp thead .us small{color:#d7f0f3}
+.cmp td.us{color:var(--ink);font-weight:600}
+.mk{font-style:normal;display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-right:8px;vertical-align:middle;color:#fff}
+.mk.y{background:var(--teal)} .mk.n{background:#c9d1d8} .mk.m{background:#fff;color:var(--mute);box-shadow:inset 0 0 0 1.5px #c9d1d8}
+.take{margin-top:clamp(10px,2vh,16px);font-size:var(--t-li);font-weight:700;color:var(--teal-d)}
+/* ── install steps ── */
+ol.steps{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 clamp(12px,2.2vh,20px);counter-reset:st}
+ol.steps li{counter-increment:st;font-size:13px;font-weight:700;color:var(--teal-d);background:var(--teal-s);padding:6px 12px 6px 8px;border-radius:16px;display:flex;align-items:center;gap:6px}
+ol.steps li::before{content:counter(st);width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
 
 /* ── proof ── */
 .proof{display:grid;grid-template-columns:minmax(280px,38%) 1fr;gap:clamp(18px,2.8vw,40px);height:100%;align-items:center}
@@ -244,7 +270,7 @@ figcaption{font-size:13px;color:var(--ink2);padding:7px 12px;font-weight:600}
   .split,.cover,.prod,.proof{grid-template-columns:1fr;height:auto;align-items:start}
   .vis,.pv,.tvw,.int-wrap,.contact,.gal{height:auto}
   .cover .ph{height:auto;aspect-ratio:16/10}
-  .int{grid-template-columns:1fr}
+  .int{grid-template-columns:1fr 1fr}
   .mosaic{height:auto;grid-template-rows:none}
   .mosaic img{aspect-ratio:4/3}
   .tv{width:100%}
@@ -346,6 +372,53 @@ const SLIDES = [
       spec: ['Model SP-600', '90 × 192 × 12 cm', 'Bluetooth · Wi-Fi', 'AA × 2'],
       cap: { battery: 'Battery box: 2 × AA', receiver: 'Receiver', mattress: 'Waterproof medical cover' },
       notes: "The sensor layer sends data over Bluetooth to a receiver in the room, which forwards it over the network to AI CarePad. The mattress runs on ordinary AA batteries — no outlets or cables, nothing to trip over and nothing to pull loose.",
+    },
+  },
+
+  // 1b ─ 方式比較
+  {
+    type: 'compare',
+    zh: {
+      title: '跟其他離床感測方式比一比',
+      cols: [['床墊下感測墊', '放在原有床墊下方'], ['非接觸感測', '雷達等，裝在床邊或天花板'], ['WhizPad', '感測層做在減壓床墊裡']],
+      rows: [
+        ['需不需要換床墊', ['t','不需要'], ['t','不需要'], ['t','換成 WhizPad，本身就是減壓床墊']],
+        ['減壓、預防壓傷', ['n','沒有，沿用原有床墊'], ['n','沒有'], ['y','溫感釋壓泡綿，臨床研究壓傷發生率下降 88%']],
+        ['身體各部位受壓分布', ['m','依產品而異'], ['n','無法量測壓力'], ['y','5 × 6 壓力分布圖，加上連續受壓時間']],
+        ['離床前兆（坐床、床緣）', ['m','依產品而異'], ['m','依產品而異'], ['y','三階段提醒，分得出左右床緣']],
+        ['電源', ['m','依產品而異'], ['t','需要插電'], ['y','2 顆 3 號電池，無線']],
+      ],
+      take: '感測墊和雷達負責偵測；WhizPad 偵測的同時，也是一張減壓床墊。',
+      foot: '一般性的技術方式比較，各品牌實際功能依產品而異。',
+      notes: '機構常見的離床感測有三種：放在原有床墊下的感測墊、雷達等非接觸感測，以及 WhizPad 這種把感測層做在床墊裡的方式。前兩種不用換床墊，但只能偵測，沒有減壓效果，雷達也量不到身體各部位的受壓情況。WhizPad 本身就是減壓床墊，同時能看到壓力分布、判斷離床前兆，而且用電池、不用拉線。',
+    },
+    ja: {
+      title: '見守りセンサーの方式比較',
+      cols: [['マットレス下センサー', '既存マットレスの下に敷く'], ['非接触型', 'レーダー等、ベッド周囲や天井に設置'], ['WhizPad', 'センサー層を体圧分散マットレスに内蔵']],
+      rows: [
+        ['マットレスの交換', ['t','不要'], ['t','不要'], ['t','WhizPad に交換（体圧分散マットレスそのもの）']],
+        ['体圧分散・褥瘡予防', ['n','なし（既存マットレスのまま）'], ['n','なし'], ['y','低反発ウレタン。臨床研究で褥瘡発生率 88% 低下']],
+        ['部位別の体圧分布', ['m','製品により異なる'], ['n','体圧は測定できない'], ['y','5×6 の体圧マップと連続圧迫時間']],
+        ['離床の前兆（起き上がり・端座位）', ['m','製品により異なる'], ['m','製品により異なる'], ['y','3 段階で通知、左右の端座位も判別']],
+        ['電源', ['m','製品により異なる'], ['t','電源が必要'], ['y','単三電池 2 本、ワイヤレス']],
+      ],
+      take: 'センサーは「見守る」だけ。WhizPad は見守りながら、体圧分散マットレスとして褥瘡予防にも役立ちます。',
+      foot: '一般的な方式の比較です。各社製品の実際の機能は製品により異なります。',
+      notes: '施設でよく使われる見守りセンサーは、既存マットレスの下に敷くタイプ、レーダーなどの非接触タイプ、そして WhizPad のようにセンサーをマットレスに内蔵したタイプの3種類です。前の2つはマットレス交換が不要な一方、見守り専用で体圧分散の効果はなく、非接触型は部位ごとの体圧も測れません。WhizPad は体圧分散マットレスそのもので、体圧分布と離床の前兆を同時に把握でき、電池式で配線も不要です。',
+    },
+    en: {
+      title: 'How the approaches compare',
+      cols: [['Under-mattress pad', 'Placed under the existing mattress'], ['Contactless', 'Radar etc., mounted by the bed or on the ceiling'], ['WhizPad', 'Sensor layer built into a pressure-relief mattress']],
+      rows: [
+        ['Mattress replacement', ['t','Not needed'], ['t','Not needed'], ['t','Replaced by WhizPad, itself a pressure-relief mattress']],
+        ['Pressure relief', ['n','None; keeps the existing mattress'], ['n','None'], ['y','Memory foam; 88% fewer pressure injuries in a clinical study']],
+        ['Pressure by body area', ['m','Varies by product'], ['n','Cannot measure pressure'], ['y','5 × 6 pressure map with continuous-pressure time']],
+        ['Early bed-exit signs (sitting up, bedside)', ['m','Varies by product'], ['m','Varies by product'], ['y','3-stage alerts; tells left edge from right']],
+        ['Power', ['m','Varies by product'], ['t','Needs mains power'], ['y','2 AA batteries, wireless']],
+      ],
+      take: 'Pads and radar only monitor. WhizPad monitors and is also a pressure-relief mattress.',
+      foot: 'A general comparison of approaches; actual features vary by brand and product.',
+      notes: 'Facilities usually choose between three approaches: a sensor pad under the existing mattress, a contactless sensor such as radar, or a mattress with the sensor built in, like WhizPad. The first two avoid replacing the mattress but only monitor — there is no pressure relief, and radar cannot see pressure by body area. WhizPad is itself a pressure-relief mattress, shows the pressure map and early bed-exit signs, and runs on batteries with no cables.',
     },
   },
 
@@ -496,31 +569,31 @@ const SLIDES = [
       title: '每位住民、每個班別，各自設定',
       bullets: [
         '早／中／晚三班，分別開關<b>跌倒、壓傷、臥床、床緣、離床</b>警示',
-        '門檻可調：翻身、低活動、長時間臥床、離床過久',
+        '門檻可調：翻身、躁動、低活動、長時間臥床、離床過久',
         '新住民有需要時，按<b>一鍵開啟提醒</b>就能快速設定好；沒有需要可以不用',
         '減少不必要的警報，避免警報疲勞',
       ],
-      notes: "每位住民需要的提醒不同，例如白天可以自由走動、只有夜間需要離床提醒。每一種警示都能依早、中、晚班分別開關，門檻時間也可以調整；新住民有這個需求時，按「一鍵開啟提醒」就能快速把提醒全部打開；不需要的話，也可以只開需要的項目。",
+      notes: "每位住民需要的提醒不同，例如白天可以自由走動、只有夜間需要離床提醒。每一種警示都能依早、中、晚班分別開關，翻身、躁動、低活動、長時間臥床等門檻時間也可以調整；新住民有這個需求時，按「一鍵開啟提醒」就能快速把提醒全部打開；不需要的話，也可以只開需要的項目。",
     },
     ja: {
       title: '入居者ごと・シフトごとにアラート設定',
       bullets: [
         '朝・昼・夜のシフト別に、<b>転倒・褥瘡・臥床・ベッドサイド・離床</b>アラートをON／OFF',
-        'しきい値を調整：体位変換・低活動・長期臥床・離床時間',
+        'しきい値を調整：体位変換・体動・低活動・長期臥床・離床時間',
         '新しい入居者に必要な場合は<b>ワンタップで一括ON</b>。必要なければ使わなくてもOK',
         '不要なアラートを減らし「アラート疲れ」を防止',
       ],
-      notes: "必要な見守りは入居者ごとに異なります（例：日中は自由に歩行し、夜間のみ離床通知が必要）。各アラートは朝・昼・夜のシフト別に ON／OFF でき、しきい値も調整可能。新しい入居者に必要な場合は「一括ON」で素早く設定でき、必要なければ必要な項目だけをONにすることもできます。",
+      notes: "必要な見守りは入居者ごとに異なります（例：日中は自由に歩行し、夜間のみ離床通知が必要）。各アラートは朝・昼・夜のシフト別に ON／OFF でき、体位変換・体動・低活動・長期臥床などのしきい値も調整可能。新しい入居者に必要な場合は「一括ON」で素早く設定でき、必要なければ必要な項目だけをONにすることもできます。",
     },
     en: {
       title: 'Alerts tuned per resident, per shift',
       bullets: [
         'Turn <b>fall, pressure, in-bed, bedside and out-of-bed</b> alerts on or off for morning, noon and night',
-        'Adjustable thresholds: turning, low activity, prolonged bed time, time out of bed',
+        'Adjustable thresholds: turning, restlessness, low activity, prolonged bed time, time out of bed',
         'When a new resident needs them, <b>one tap</b> turns all alerts on — optional if not needed',
         'Fewer unnecessary alarms, less alarm fatigue',
       ],
-      notes: "Every resident needs different alerts — for example, free to walk during the day but needing bed-exit alerts at night. Each alert can be switched per morning, noon and night shift with adjustable thresholds, and when a new resident needs it, one tap turns all alerts on quickly — or staff can switch on only the ones that are needed.",
+      notes: "Every resident needs different alerts — for example, free to walk during the day but needing bed-exit alerts at night. Each alert can be switched per morning, noon and night shift with adjustable thresholds for turning, restlessness, low activity and prolonged bed time, and when a new resident needs it, one tap turns all alerts on quickly — or staff can switch on only the ones that are needed.",
     },
   },
 
@@ -566,31 +639,34 @@ const SLIDES = [
       title: '與既有系統串接',
       cards: [
         ['his', 'HIS／NIS', '串接院方 HIS／NIS，<b>自動匯入住民資料</b>，不用重複建檔'],
+        ['bell', '護士呼叫系統', '對方系統有開放介接時，<b>警報可串接到護士呼叫系統</b>，沿用現有的呼叫流程'],
         ['cam', '攝影機', '串接機構既有攝影機：<b>警報響起時先看畫面確認</b>，再決定是否出動'],
         ['vital', '生命徵象', '床墊不量測心率、體溫、血壓；可串接<b>有開放 API 的穿戴裝置</b>，數值直接顯示在床位卡'],
       ],
       cap: '串接穿戴裝置後，床位卡上會多出心率、體溫、血壓',
-      notes: "不需要更換機構現有的設備：住民資料可以從 HIS／NIS 自動匯入；機構原有的攝影機可以串接，警報時直接看畫面確認；心率、體溫、血壓等數值，串接有開放 API 的穿戴裝置後，就會顯示在床位卡上。",
+      notes: "不需要更換機構現有的設備：住民資料可以從 HIS／NIS 自動匯入；護士呼叫系統只要有開放介接，警報就能串接過去；機構原有的攝影機可以串接，警報時直接看畫面確認；心率、體溫、血壓等數值，串接有開放 API 的穿戴裝置後，就會顯示在床位卡上。",
     },
     ja: {
       title: '既存システムとの連携',
       cards: [
         ['his', '電子カルテ／記録システム', 'HIS・看護／介護記録システムと連携し、<b>入居者情報を自動で取り込み</b>。二重入力は不要'],
+        ['bell', 'ナースコール', 'ナースコール側が連携仕様を公開していれば、<b>アラートをナースコールに連携</b>でき、今の運用のまま使えます'],
         ['cam', 'カメラ', '施設に設置済みのカメラと連携：<b>アラート時は映像で状況を確認</b>してから訪室を判断'],
         ['vital', 'バイタル', '本製品に体温・血圧等の測定機能はありませんが、<b>API公開のウェアラブル機器</b>と連携してベッドカードに表示できます'],
       ],
       cap: 'ウェアラブル連携時は、心拍・体温・血圧がベッドカードに表示されます',
-      notes: "施設の既存設備を入れ替える必要はありません。入居者情報は電子カルテや記録システムから自動で取り込めます。設置済みのカメラと連携すればアラート時にすぐ映像で確認でき、心拍・体温・血圧は API 公開のウェアラブル機器と連携してベッドカードに表示します。",
+      notes: "施設の既存設備を入れ替える必要はありません。入居者情報は電子カルテや記録システムから自動で取り込めます。ナースコールも連携仕様が公開されていれば、アラートを連携できます。設置済みのカメラと連携すればアラート時にすぐ映像で確認でき、心拍・体温・血圧は API 公開のウェアラブル機器と連携してベッドカードに表示します。",
     },
     en: {
       title: 'Works with what you already have',
       cards: [
         ['his', 'HIS / NIS', 'Connect to the hospital HIS / NIS to <b>import resident data automatically</b> — no double entry'],
+        ['bell', 'Nurse call', 'Where the nurse-call system offers an open interface, <b>alerts can be passed to nurse call</b> so staff keep their usual workflow'],
         ['cam', 'Cameras', 'Link the facility’s existing cameras: <b>check the video when an alert fires</b>, then decide whether to go'],
         ['vital', 'Vital signs', 'The mattress does not measure HR, temperature or BP, but <b>wearables with an open API</b> can be connected and shown on each bed card'],
       ],
       cap: 'With a wearable connected, heart rate, temperature and BP appear on each bed card',
-      notes: "Nothing the facility already has needs replacing: resident data is imported from the HIS / NIS, existing cameras can be linked so staff check the video when an alert fires, and heart rate, temperature and blood pressure from wearables with an open API appear on each bed card.",
+      notes: "Nothing the facility already has needs replacing: resident data is imported from the HIS / NIS, alerts can be passed to a nurse-call system that offers an open interface, existing cameras can be linked so staff check the video when an alert fires, and heart rate, temperature and blood pressure from wearables with an open API appear on each bed card.",
     },
   },
 
@@ -599,33 +675,36 @@ const SLIDES = [
     type: 'split', images: ['L:16_candidates', 'L:17_folders'], layout: 'gallery',
     zh: {
       title: '導入簡單，管理輕鬆',
+      steps: ['鋪上床墊', '連上網路', '教育訓練', '正式上線'],
       bullets: [
         '<b>鋪上床墊就能用</b>：系統自動偵測附近的床墊，選好床位一鍵配對',
         '樓層 › 房間 › 床位分層管理；入住、轉床、退住都有操作紀錄',
         '電量、離線狀態即時監控，低電量提前提醒換電池',
         '介面支援 <b>中文／English／日本語</b>',
       ],
-      notes: "床墊鋪上後，系統會自動偵測附近尚未配對的床墊，管理員選好床位按「配對」就能使用。床位依樓層、房間分層管理，入住、轉床、退住都有操作紀錄，電池快沒電時也會事先提醒。",
+      notes: "導入只要四步：鋪上床墊、接收器連上網路、照護人員教育訓練、正式上線，不需要拉線施工。床墊鋪上後，系統會自動偵測附近尚未配對的床墊，管理員選好床位按「配對」就能使用。床位依樓層、房間分層管理，入住、轉床、退住都有操作紀錄，電池快沒電時也會事先提醒。",
     },
     ja: {
       title: 'かんたん導入、らくらく管理',
+      steps: ['マットレスを敷く', 'ネットワーク接続', '操作研修', '運用開始'],
       bullets: [
         '<b>マットレスを敷くだけ</b>：近くのマットレスを自動検出、ベッドを選んでワンタップで紐付け',
         'フロア › 部屋 › ベッドで管理。入居・転床・退居は操作履歴に記録',
         '電池残量・オフラインを常時監視、交換時期を事前にお知らせ',
         '画面は<b>日本語・英語・中国語</b>に対応',
       ],
-      notes: "マットレスを敷くと、近くの未紐付けマットレスをシステムが自動で検出し、管理者がベッドを選んで「紐付け」を押すだけで使用できます。ベッドはフロア・部屋ごとに管理され、入居・転床・退居はすべて操作履歴に残り、電池残量が少なくなると事前にお知らせします。",
+      notes: "導入は4ステップ：マットレスを敷く、受信機をネットワークに接続、職員の操作研修、運用開始。配線工事は不要です。マットレスを敷くと、近くの未紐付けマットレスをシステムが自動で検出し、管理者がベッドを選んで「紐付け」を押すだけで使用できます。ベッドはフロア・部屋ごとに管理され、入居・転床・退居はすべて操作履歴に残り、電池残量が少なくなると事前にお知らせします。",
     },
     en: {
       title: 'Easy to install, easy to manage',
+      steps: ['Lay the mattress', 'Connect to the network', 'Train staff', 'Go live'],
       bullets: [
         '<b>Lay it down and go</b>: nearby pads are detected automatically — pick a bed and pair in one tap',
         'Floor › room › bed structure; admissions, transfers and discharges are all logged',
         'Battery and connection monitored; low battery flagged before it runs out',
         'Interface in <b>English, Japanese and Chinese</b>',
       ],
-      notes: "Once the mattress is laid down, the system detects nearby unpaired pads; an admin picks the bed and taps Pair. Beds are organized by floor and room, admissions, transfers and discharges are logged, and low batteries are flagged in advance.",
+      notes: "Installation takes four steps — lay the mattress, connect the receiver to the network, train staff, go live — with no cabling work. Once the mattress is laid down, the system detects nearby unpaired pads; an admin picks the bed and taps Pair. Beds are organized by floor and room, admissions, transfers and discharges are logged, and low batteries are flagged in advance.",
     },
   },
 
@@ -733,6 +812,7 @@ const ICON={
  vital:SV('<path d="M3 12h4l2-5 4 10 2-5h6"/>'),
  sys:SV('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
  dev:SV('<rect x="4" y="3" width="11" height="16" rx="2"/><rect x="14" y="8" width="7" height="13" rx="1.5"/>'),
+ bell:SV('<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 004 0"/>'),
  spk:SV('<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9a4 4 0 010 6M19.5 6.5a7.5 7.5 0 010 11"/>')
 };
 
@@ -814,7 +894,13 @@ function render(s){
       <div class="logos"><img src="${IMG['photos/logo_whizpad']}" alt=""><img src="${IMG['photos/logo_imager37']}" alt=""></div>
       ${lang==='ja'?ino+seda:seda+ino}
       <p class="tm">IMAGER-37 is a registered trademark of SEDA Chemical Products Co., Ltd.</p></div>`; }
-  default: return `<div class="split"><div class="txt"><h2>${t.title}</h2>${bullets(t)}</div>${visual(s)}</div>`;
+  case 'compare': {
+    const mk={y:'<i class="mk y">✓</i>',n:'<i class="mk n">✕</i>',m:'<i class="mk m">△</i>',t:''};
+    return `<div class="cmp"><h2>${t.title}</h2>
+      <div class="cmpw"><table><thead><tr><th></th>${t.cols.map(([a,b],k)=>`<th class="${k===2?'us':''}">${a}<small>${b}</small></th>`).join('')}</tr></thead>
+      <tbody>${t.rows.map(r=>`<tr><th>${r[0]}</th>${r.slice(1).map(([m,v],k)=>`<td class="${k===2?'us':''}">${mk[m]}<span>${v}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <p class="take">${t.take}</p><p class="foot">${t.foot}</p></div>`; }
+  default: return `<div class="split"><div class="txt"><h2>${t.title}</h2>${t.steps?`<ol class="steps">${t.steps.map(x=>`<li>${x}</li>`).join('')}</ol>`:''}${bullets(t)}</div>${visual(s)}</div>`;
   }
 }
 
