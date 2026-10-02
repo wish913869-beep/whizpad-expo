@@ -147,8 +147,8 @@ figcaption{font-size:13px;color:var(--ink2);padding:7px 12px;font-weight:600}
 .mh .mt{font-weight:700;color:var(--ink)}
 .mh .mc{margin-left:auto;font-variant-numeric:tabular-nums}
 .mh .mc b{color:var(--r);margin-left:1cqw}
-.mh .spk{width:3.4cqw;height:3.4cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal-d);background:var(--teal-s);cursor:pointer;border:0}
-.mh .spk svg{width:2cqw;height:2cqw}
+.mh .spk{width:max(3.4cqw,36px);height:max(3.4cqw,36px);flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal-d);background:var(--teal-s);cursor:pointer;border:0}
+.mh .spk svg{width:max(2cqw,20px);height:max(2cqw,20px)}
 .mh .spk.on{background:var(--teal);color:#fff}
 .mg{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:1cqw;padding:1.2cqw 1.4cqw;min-height:0}
 .mcard{background:#fff;border:.25cqw solid #e3e9ee;border-radius:1cqw;padding:.7cqw .9cqw;display:flex;flex-direction:column;min-height:0;transition:border-color .3s,background .3s}
@@ -832,14 +832,48 @@ function monStep(){
   if(say){ const txt=m.say[say](i+1); document.getElementById('bubT').textContent=txt; bub.classList.add('on'); speak(txt); }
   else bub.classList.remove('on');
 }
-function speak(txt){
-  if(!voice||!('speechSynthesis' in window)) return;
-  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.lang={zh:'zh-TW',ja:'ja-JP',en:'en-US'}[lang]; speechSynthesis.speak(u); }catch(e){}
+/* voice: iPad Safari only plays audio/speech that is first started inside a tap,
+   so the speaker button speaks a confirmation and plays a chime right away to unlock both. */
+const HAS_TTS='speechSynthesis' in window, VL={zh:['zh-TW','zh-HK','zh'],ja:['ja-JP','ja'],en:['en-US','en']};
+const VON={zh:'語音提醒已開啟',ja:'音声通知をオンにしました',en:'Voice alerts on'};
+const VNO={zh:'此瀏覽器不支援語音，僅播放提示音',ja:'このブラウザは音声読み上げ非対応のため、通知音のみ鳴らします',en:'Speech is not supported here; chime only'};
+let voices=[], au=null; const KEEP=[];
+function loadVoices(){ try{ voices=speechSynthesis.getVoices()||[]; }catch(e){} }
+if(HAS_TTS){ loadVoices(); try{ speechSynthesis.addEventListener('voiceschanged',loadVoices); }catch(e){ speechSynthesis.onvoiceschanged=loadVoices; } }
+function pickVoice(){
+  if(!voices.length) loadVoices();
+  const n=v=>(v.lang||'').replace('_','-').toLowerCase();
+  for(const p of VL[lang]){ const v=voices.find(v=>n(v).startsWith(p.toLowerCase())); if(v) return v; }
+  return null;
 }
+function chime(){
+  try{
+    if(!au){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return; au=new C(); }
+    if(au.state==='suspended') au.resume();
+    const t=au.currentTime;
+    [880,660].forEach((f,k)=>{ const o=au.createOscillator(), g=au.createGain(), s=t+k*.18;
+      o.frequency.value=f; o.connect(g); g.connect(au.destination);
+      g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.3,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.16);
+      o.start(s); o.stop(s+.18); });
+  }catch(e){}
+}
+function say(txt){
+  if(!HAS_TTS) return;
+  try{
+    if(speechSynthesis.paused) speechSynthesis.resume();
+    const u=new SpeechSynthesisUtterance(txt), v=pickVoice();
+    if(v){ u.voice=v; u.lang=v.lang; } else u.lang=VL[lang][0];
+    u.rate=1; u.volume=1;
+    KEEP.push(u); if(KEEP.length>6) KEEP.shift();   // keep a reference so Safari does not drop it mid-sentence
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function speak(txt){ if(!voice) return; chime(); setTimeout(()=>say(txt),380); }
+function stopVoice(){ if(HAS_TTS){ try{ speechSynthesis.cancel(); }catch(e){} } KEEP.length=0; }
 function monSync(){
   const on=SLIDES[cur].type==='monitor';
   if(on&&!mTimer){ mi=0; monStep(); mTimer=setInterval(monStep,2600); }
-  if(!on&&mTimer){ clearInterval(mTimer); mTimer=null; }
+  if(!on&&mTimer){ clearInterval(mTimer); mTimer=null; stopVoice(); }
 }
 
 /* ── deck ── */
@@ -890,7 +924,14 @@ if(rfs){ const b=$('#bFull'); b.hidden=false;
 $('#track').addEventListener('click',e=>{
   if(moved) return;
   const sp=e.target.closest('#spk');
-  if(sp){ voice=!voice; sp.classList.toggle('on',voice); if(!voice&&'speechSynthesis' in window) speechSynthesis.cancel(); return; }
+  if(sp){
+    voice=!voice; sp.classList.toggle('on',voice);
+    if(voice){
+      chime(); say(VON[lang]);                       // inside the tap: unlocks audio + speech on iPad
+      const b=document.getElementById('bub');
+      document.getElementById('bubT').textContent=HAS_TTS?VON[lang]:VNO[lang]; b.classList.add('on');
+    } else stopVoice();
+    return; }
   const g=e.target.closest('[data-g]');
   if(g){ const v=g.closest('.gal'); v.querySelectorAll('[data-g]').forEach(b=>b.classList.toggle('on',b===g));
     const m=v.querySelector('.main'); m.dataset.z=g.dataset.g; m.querySelector('img').src=src(g.dataset.g); return; }
