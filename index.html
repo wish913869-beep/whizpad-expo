@@ -960,6 +960,19 @@ function say(txt){
 }
 function speak(txt){ if(!voice) return; chime(); setTimeout(()=>say(txt),380); }
 function stopVoice(){ if(HAS_TTS){ try{ speechSynthesis.cancel(); }catch(e){} } KEEP.length=0; }
+/* real visible height: older iPad Safari has no dvh, and 100vh there is taller than the visible area */
+function setVH(){ document.documentElement.style.setProperty('--H', window.innerHeight+'px'); }
+setVH();
+['resize','orientationchange','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ setVH(); setTimeout(()=>{ setVH(); sizeTv(); },120); }));
+if(window.visualViewport) visualViewport.addEventListener('resize',()=>{ setVH(); sizeTv(); });
+/* no rubber-band dragging on pages that fit the screen */
+document.addEventListener('touchmove',e=>{
+  if(e.touches.length>1) return;
+  if(e.target.closest('#lb')) return;
+  const sl=e.target.closest('.slide, .idx .grid, .sheet .pn');
+  if(sl && sl.scrollHeight>sl.clientHeight+2) return;
+  e.preventDefault();
+},{passive:false});
 /* monitor mock is sized from its own width (no container-query units, so older iPads render it too) */
 function sizeTv(){ document.querySelectorAll('.tv').forEach(tv=>{ const w=tv.clientWidth; if(!w) return;
   tv.style.setProperty('--u',(w/100)+'px'); const scr=tv.querySelector('.scr'); if(scr) scr.style.height=(scr.clientWidth*9/16)+'px'; }); }
