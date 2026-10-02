@@ -39,7 +39,8 @@ button{touch-action:manipulation}
 
 /* ── top bar ── */
 .bar{position:fixed;inset:0 0 auto 0;height:calc(var(--bar) + env(safe-area-inset-top));padding:env(safe-area-inset-top) var(--pad) 0;display:flex;align-items:center;gap:10px;z-index:20;background:rgba(245,248,250,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;border:0;background:none;padding:6px 8px;margin-left:-8px;border-radius:10px;font:inherit;cursor:pointer}
+.brand:active{background:var(--teal-s)}
 .brand img{height:22px;width:auto}
 .brand span{font-size:14px;color:var(--ink2);font-weight:600}
 .sp{flex:1}
@@ -281,7 +282,7 @@ ol.steps li::before{content:counter(st);width:20px;height:20px;border-radius:50%
 </head>
 <body>
 <header class="bar">
-  <div class="brand"><img id="logo" alt="WhizPad"><span>AI CarePad</span></div>
+  <button class="brand" id="home" type="button" aria-label="Home"><img id="logo" alt="WhizPad"><span>AI CarePad</span></button>
   <div class="sp"></div>
   <span class="count" id="count"></span>
   <button class="btn" id="bFull" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
@@ -997,6 +998,7 @@ function setLang(l){ lang=l; try{localStorage.setItem('cp_lang',l)}catch(e){} bu
 
 /* ── events ── */
 $('#lang').addEventListener('click',e=>{ const l=e.target.dataset&&e.target.dataset.l; if(l) setLang(l); });
+$('#home').onclick=()=>{ ['#lb','#idx'].forEach(s=>$(s).classList.remove('on')); notes(false); go(0); };
 $('#prev').onclick=()=>go(cur-1); $('#next').onclick=()=>go(cur+1);
 $('#nav').addEventListener('click',e=>{ if(e.target.dataset.i) go(+e.target.dataset.i); });
 $('#bNotes').onclick=()=>notes(!$('#sheet').classList.contains('on'));
