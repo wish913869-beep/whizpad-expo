@@ -963,7 +963,11 @@ function stopVoice(){ if(HAS_TTS){ try{ speechSynthesis.cancel(); }catch(e){} } 
 /* monitor mock is sized from its own width (no container-query units, so older iPads render it too) */
 function sizeTv(){ document.querySelectorAll('.tv').forEach(tv=>{ const w=tv.clientWidth; if(!w) return;
   tv.style.setProperty('--u',(w/100)+'px'); const scr=tv.querySelector('.scr'); if(scr) scr.style.height=(scr.clientWidth*9/16)+'px'; }); }
+const tvRO=('ResizeObserver' in window)?new ResizeObserver(()=>sizeTv()):null;   // re-measure whenever the frame changes size (toolbar, rotation, text size)
+function watchTv(){ if(!tvRO) return; tvRO.disconnect(); document.querySelectorAll('.tv').forEach(tv=>tvRO.observe(tv)); }
 window.addEventListener('resize',()=>setTimeout(sizeTv,60));
+if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(sizeTv,60));
+window.addEventListener('pageshow',()=>setTimeout(sizeTv,60));
 window.addEventListener('orientationchange',()=>setTimeout(sizeTv,300));
 function monSync(){ sizeTv();
   const on=SLIDES[cur].type==='monitor';
@@ -990,7 +994,7 @@ function build(){
   $('#idxG').innerHTML=SLIDES.map((s,i)=>`<button data-i="${i}"><i>${String(i+1).padStart(2,'0')}</i><span>${s[lang].title}</span></button>`).join('');
   const sp=document.getElementById('spk'); if(sp) sp.classList.toggle('on',voice);
   go(cur,false);
-  requestAnimationFrame(sizeTv);
+  watchTv(); requestAnimationFrame(sizeTv); setTimeout(sizeTv,400);
 }
 function go(i,anim=true){
   cur=Math.max(0,Math.min(SLIDES.length-1,i));
