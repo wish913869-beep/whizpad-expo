@@ -171,6 +171,7 @@ figcaption{font-size:var(--t-xs);color:var(--ink2);padding:7px 12px;font-weight:
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 calc(var(--u,7px)*.9) rgba(239,68,68,.25)}}
 .bubble{position:absolute;right:calc(var(--u,7px)*2);top:calc(var(--u,7px)*6.4);background:var(--ink);color:#fff;font-size:calc(var(--u,7px)*1.9);font-weight:700;padding:calc(var(--u,7px)*1) calc(var(--u,7px)*1.8);border-radius:calc(var(--u,7px)*2);display:flex;align-items:center;gap:calc(var(--u,7px)*1);opacity:0;transform:translateY(calc(var(--u,7px)*-.6));transition:all .3s;box-shadow:0 8px 20px rgba(0,0,0,.25);pointer-events:none}
 .bubble.on{opacity:1;transform:none}
+.bubble #bubT{max-width:calc(var(--u,7px)*52);line-height:1.35}
 .bubble svg{width:calc(var(--u,7px)*2.4);height:calc(var(--u,7px)*2.4)}
 .bubble .w{display:inline-flex;gap:calc(var(--u,7px)*.3);align-items:center}
 .bubble .w i{width:calc(var(--u,7px)*.35);height:calc(var(--u,7px)*1.6);background:#7fd3dc;border-radius:calc(var(--u,7px)*.2);animation:wave .8s ease-in-out infinite}
@@ -910,7 +911,7 @@ function render(s){
 
 /* ── monitor animation: a scripted night shift ── */
 const SEQ=[[2,'onBed','ok',0],[2,'bedsideR','fall','fall'],[2,'outOfBed','out','out'],[2,'inBed','ok',0],[6,'inBed','turn','turn'],[6,'inBed','ok',0],[1,'bedsideL','fall','fall'],[1,'onBed','ok',0]];
-let mi=0, mTimer=null, voice=false;
+let mi=0, mTimer=null, voice=false, holdBub=0;
 function monStep(){
   const m=MON[lang]; const [i,p,s,say]=SEQ[mi%SEQ.length]; mi++;
   const c=document.getElementById('mc'+i); if(!c) return;
@@ -918,15 +919,26 @@ function monStep(){
   c.querySelector('.ps').textContent=m.pos[p]; c.querySelector('.ss span').textContent=m.st[s];
   const al=document.querySelectorAll('.mcard.fall,.mcard.out,.mcard.turn').length;
   document.getElementById('mAl').textContent=`${m.count[1]} ${al}`;
-  const bub=document.getElementById('bub');
+  const bub=document.getElementById('bub'); if(Date.now()<holdBub){ if(say) speak(m.say[say](i+1)); return; }
   if(say){ const txt=m.say[say](i+1); document.getElementById('bubT').textContent=txt; bub.classList.add('on'); speak(txt); }
   else bub.classList.remove('on');
 }
 /* voice: iPad Safari only plays audio/speech that is first started inside a tap,
    so the speaker button speaks a confirmation and plays a chime right away to unlock both. */
-const HAS_TTS='speechSynthesis' in window, VL={zh:['zh-TW','zh-HK','zh'],ja:['ja-JP','ja'],en:['en-US','en']};
+const HAS_TTS='speechSynthesis' in window, VL={zh:['zh-TW','zh-HK','zh','cmn','yue'],ja:['ja-JP','ja'],en:['en-US','en']};
 const VON={zh:'語音提醒已開啟',ja:'音声通知をオンにしました',en:'Voice alerts on'};
 const VNO={zh:'此瀏覽器不支援語音，僅播放提示音',ja:'このブラウザは音声読み上げ非対応のため、通知音のみ鳴らします',en:'Speech is not supported here; chime only'};
+/* the device must have a voice for the slide language; without one the browser silently reads with another language's voice */
+const VMISS={zh:'這台平板沒有中文語音，播報會無聲或念錯',ja:'この端末には日本語の音声がないため、読み上げが無音か不正確になります',en:'This device has no English voice, so alerts may be silent or misread'};
+const UA=navigator.userAgent, OS=(/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1))?'ios':/Android/.test(UA)?'and':/Windows/.test(UA)?'win':'';
+const VHOW={
+  ios:{zh:'請到 設定 › 輔助使用 › 語音內容 › 聲音 › 中文 下載語音',ja:'設定 › アクセシビリティ › 読み上げコンテンツ › 声 › 日本語 で音声をダウンロードしてください',en:'Download one in Settings › Accessibility › Spoken Content › Voices › English'},
+  and:{zh:'請到 設定 › 文字轉語音輸出 › Google 語音服務 › 安裝語音資料 › 中文(台灣)',ja:'設定 › テキスト読み上げの出力 › Google 音声サービス › 音声データをインストール › 日本語 を追加してください',en:'Add it in Settings › Text-to-speech output › Speech Services by Google › Install voice data › English'},
+  win:{zh:'請到 設定 › 時間與語言 › 語音 › 新增語音 安裝中文',ja:'設定 › 時刻と言語 › 音声認識 › 音声を追加 で日本語を入れてください',en:'Add it in Settings › Time & language › Speech › Add voices'}};
+const VNONE={zh:'這台平板沒有任何語音引擎，目前只播提示音',ja:'この端末には音声読み上げエンジンがないため、通知音のみ鳴らします',en:'This device has no speech engine, so only the chime plays'};
+const VENG={and:{zh:'請從 Play 商店安裝「Google 語音服務」，再到 設定 › 文字轉語音輸出 選它並下載語音',ja:'Play ストアで「Google 音声サービス」をインストールし、設定 › テキスト読み上げの出力 で選択してください',en:'Install Speech Services by Google from the Play Store, then pick it in Settings › Text-to-speech output'}};
+function voiceMsg(late){ if(!HAS_TTS) return VNO[lang];
+  if(late&&!voices.length){ const h=(VENG[OS]||VHOW[OS]||{})[lang]; return VNONE[lang]+(h?(lang==='en'?'. ':'。')+h:''); } if(voices.length&&!pickVoice()) { const h=(VHOW[OS]||{})[lang]; return VMISS[lang]+(h?(lang==='en'?'. ':'。')+h:''); } return VON[lang]; }
 let voices=[], au=null; const KEEP=[];
 function loadVoices(){ try{ voices=speechSynthesis.getVoices()||[]; }catch(e){} }
 if(HAS_TTS){ loadVoices(); try{ speechSynthesis.addEventListener('voiceschanged',loadVoices); }catch(e){ speechSynthesis.onvoiceschanged=loadVoices; } }
@@ -1050,8 +1062,9 @@ $('#track').addEventListener('click',e=>{
     voice=!voice; sp.classList.toggle('on',voice);
     if(voice){
       chime(); say(VON[lang]);                       // inside the tap: unlocks audio + speech on iPad
-      const b=document.getElementById('bub');
-      document.getElementById('bubT').textContent=HAS_TTS?VON[lang]:VNO[lang]; b.classList.add('on');
+      const b=document.getElementById('bub'), t=document.getElementById('bubT');
+      const show=late=>{ const msg=voiceMsg(late); t.textContent=msg; b.classList.add('on'); holdBub=msg===VON[lang]?0:Date.now()+9000; };   // keep a warning up long enough to read
+      show(); setTimeout(()=>{ if(voice) show(true); },1500);   // some tablets list their voices a moment later
     } else stopVoice();
     return; }
   const g=e.target.closest('[data-g]');
