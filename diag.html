@@ -54,7 +54,7 @@ function load(){
   try{ voices=HAS?(speechSynthesis.getVoices()||[]):[]; }catch(e){ voices=[]; }
   $('#vn').textContent=voices.length;
   $('#vl').innerHTML=voices.length
-    ? '<tr><th>名稱</th><th>語言</th><th>離線可用</th></tr>'+voices.map(v=>`<tr><td>${esc(v.name)}${v.default?' ★':''}</td><td>${esc(v.lang)}</td><td>${v.localService?'是':'<span class="bad">否（要網路）</span>'}</td></tr>`).join('')
+    ? '<tr><th></th><th>名稱</th><th>語言</th><th>離線可用</th></tr>'+voices.map((v,i)=>`<tr><td><button class="sub" data-v="${i}" style="padding:6px 10px">試播</button></td><td>${esc(v.name)}${v.default?' ★':''}</td><td>${esc(v.lang)}</td><td>${v.localService?'是':'<span class="bad">否（要網路）</span>'}</td></tr>`).join('')
     : '<tr><td class="bad">一個語音包都沒有</td></tr>';
   info();
 }
@@ -101,15 +101,33 @@ document.querySelectorAll('button[data-l]').forEach(b=>b.onclick=()=>{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(b.dataset.t);
     if(v){ u.voice=v; u.lang=v.lang; } else u.lang=L;
-    let got=false;
-    u.onstart=()=>{ got=true; log(`${name}：開始播放（使用 ${v?v.name:'系統預設語音'}）`); };
-    u.onend=()=>{ got=true; log(`${name}：播放結束`); };
+    let got=false, t0=0;
+    u.onstart=()=>{ got=true; t0=Date.now(); log(`${name}：開始播放（使用 ${v?v.name:'系統預設語音'}）`); };
+    u.onend=()=>{ got=true; log(`${name}：播放結束（念了 ${((Date.now()-t0)/1000).toFixed(1)} 秒）`); };
     u.onerror=e=>{ got=true; log(`${name}：錯誤 ${e.error||'未知'}`); };
     KEEP.push(u); if(KEEP.length>6) KEEP.shift();
     speechSynthesis.speak(u);
     log(`${name}：已送出${v?'':'（找不到這個語言的語音包）'}`);
     setTimeout(()=>{ if(!got) log(`${name}：5 秒內完全沒反應（語音引擎沒有回應）`); },5000);
   }catch(e){ log(name+'：失敗 '+e.message); }
+});
+const SAMPLE={ja:'3番ベッド、転倒リスクです',zh:'3 號床，跌倒風險',cmn:'3 號床，跌倒風險',yue:'3 號床，跌倒風險',en:'Bed 3, fall risk'};
+$('#vl').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-v]'); if(!b) return;
+  const v=voices[+b.dataset.v]; if(!v) return;
+  const L=(v.lang||'').replace('_','-').toLowerCase().split('-')[0], t=SAMPLE[L]||'1, 2, 3';
+  unmute();
+  try{
+    if(speechSynthesis.paused) speechSynthesis.resume();
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t); u.voice=v; u.lang=v.lang; let got=false, t0=0;
+    u.onstart=()=>{ got=true; t0=Date.now(); log(`試播 ${v.name}：開始`); };
+    u.onend=()=>{ got=true; log(`試播 ${v.name}：結束（念了 ${((Date.now()-t0)/1000).toFixed(1)} 秒）`); };
+    u.onerror=e=>{ got=true; log(`試播 ${v.name}：錯誤 ${e.error||'未知'}`); };
+    KEEP.push(u); if(KEEP.length>6) KEEP.shift();
+    speechSynthesis.speak(u);
+    setTimeout(()=>{ if(!got) log(`試播 ${v.name}：5 秒內完全沒反應`); },5000);
+  }catch(err){ log('試播失敗 '+err.message); }
 });
 $('#bRe').onclick=()=>{ load(); log('重新讀取：共 '+voices.length+' 個語音包'); };
 if(HAS){ try{ speechSynthesis.addEventListener('voiceschanged',load); }catch(e){ speechSynthesis.onvoiceschanged=load; } }
