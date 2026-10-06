@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>語音檢測</title>
+<style>
+:root{--ink:#14303a;--ink2:#5b6f76;--line:#d9e2e5;--teal:#0f8b98;--bg:#f6f8f9;--ok:#15803d;--bad:#c62828}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,"PingFang TC","Hiragino Sans","Microsoft JhengHei",sans-serif;padding:16px;max-width:760px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 12px}
+h2{font-size:17px;margin:20px 0 8px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-weight:700;padding:12px 16px;border-radius:10px;border:0;background:var(--teal);color:#fff;cursor:pointer}
+button.sub{background:#e6f3f4;color:var(--teal)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top;word-break:break-all}
+.k{color:var(--ink2);width:34%}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+#log{font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;background:#0f1d22;color:#d6eef1;border-radius:10px;padding:10px;min-height:120px}
+.note{color:var(--ink2);font-size:14px}
+</style>
+</head>
+<body>
+<h1>語音檢測</h1>
+<p class="note">在有問題的平板上打開這頁，依序按下面的按鈕，再把整頁截圖傳回來。</p>
+
+<h2>1. 這台平板的狀態</h2>
+<div class="card"><table id="info"></table></div>
+
+<h2>2. 試播</h2>
+<div class="row">
+  <button id="bChime">叮咚提示音</button>
+  <button data-l="ja-JP" data-t="3番ベッド、転倒リスクです">念日文</button>
+  <button data-l="zh-TW" data-t="3 號床，跌倒風險">念中文</button>
+  <button data-l="en-US" data-t="Bed 3, fall risk">念英文</button>
+  <button class="sub" id="bRe">重新讀取語音清單</button>
+</div>
+
+<h2>3. 結果紀錄</h2>
+<div id="log"></div>
+
+<h2>4. 平板上的語音包（<span id="vn">0</span> 個）</h2>
+<div class="card"><table id="vl"><tr><td class="note">讀取中…</td></tr></table></div>
+
+<script>
+const $=s=>document.querySelector(s), HAS='speechSynthesis' in window;
+const log=m=>{ const t=new Date().toTimeString().slice(0,8); $('#log').textContent+=`[${t}] ${m}\n`; };
+let voices=[];
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function load(){
+  try{ voices=HAS?(speechSynthesis.getVoices()||[]):[]; }catch(e){ voices=[]; }
+  $('#vn').textContent=voices.length;
+  $('#vl').innerHTML=voices.length
+    ? '<tr><th>名稱</th><th>語言</th><th>離線可用</th></tr>'+voices.map(v=>`<tr><td>${esc(v.name)}${v.default?' ★':''}</td><td>${esc(v.lang)}</td><td>${v.localService?'是':'<span class="bad">否（要網路）</span>'}</td></tr>`).join('')
+    : '<tr><td class="bad">一個語音包都沒有</td></tr>';
+  info();
+}
+function has(p){ return voices.filter(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p)).length; }
+async function info(){
+  let ver='（讀不到）';
+  try{ const ks=await caches.keys(); ver=ks.filter(k=>k.startsWith('whizpad')).join(', ')||'沒有快取'; }catch(e){}
+  const yn=(b,y,n)=>b?`<span class="ok">${y}</span>`:`<span class="bad">${n}</span>`;
+  const rows=[
+    ['瀏覽器支援語音',yn(HAS,'支援','不支援')],
+    ['語音包總數',yn(voices.length,voices.length+' 個','0 個')],
+    ['日文語音',yn(has('ja'),has('ja')+' 個','沒有')],
+    ['中文語音',yn(has('zh')+has('cmn')+has('yue'),(has('zh')+has('cmn')+has('yue'))+' 個','沒有')],
+    ['英文語音',yn(has('en'),has('en')+' 個','沒有')],
+    ['音效（叮咚）支援',yn(window.AudioContext||window.webkitAudioContext,'支援','不支援')],
+    ['網路',yn(navigator.onLine,'有連線','離線')],
+    ['簡報快取版本',esc(ver)],
+    ['系統語言',esc((navigator.languages||[navigator.language]).join(', '))],
+    ['裝置資訊',esc(navigator.userAgent)]
+  ];
+  $('#info').innerHTML=rows.map(([k,v])=>`<tr><td class="k">${k}</td><td>${v}</td></tr>`).join('');
+}
+let au=null;
+$('#bChime').onclick=()=>{
+  try{
+    if(!au){ const C=window.AudioContext||window.webkitAudioContext; if(!C){ log('叮咚：此瀏覽器不支援音效'); return; } au=new C(); }
+    if(au.state==='suspended') au.resume();
+    const t=au.currentTime;
+    [880,660].forEach((f,k)=>{ const o=au.createOscillator(), g=au.createGain(), s=t+k*.18;
+      o.frequency.value=f; o.connect(g); g.connect(au.destination);
+      g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.3,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.16);
+      o.start(s); o.stop(s+.18); });
+    log('叮咚：已送出（音效狀態 '+au.state+'）。沒聽到＝音量或靜音問題');
+  }catch(e){ log('叮咚：失敗 '+e.message); }
+};
+const KEEP=[];
+document.querySelectorAll('button[data-l]').forEach(b=>b.onclick=()=>{
+  const L=b.dataset.l, name=b.textContent;
+  if(!HAS){ log(name+'：此瀏覽器不支援語音'); return; }
+  if(!voices.length) load();
+  const p=L.slice(0,2).toLowerCase(), v=voices.find(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p))||(p==='zh'?voices.find(v=>/^(cmn|yue)/i.test(v.lang||'')):null);
+  try{
+    if(speechSynthesis.paused) speechSynthesis.resume();
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(b.dataset.t);
+    if(v){ u.voice=v; u.lang=v.lang; } else u.lang=L;
+    let got=false;
+    u.onstart=()=>{ got=true; log(`${name}：開始播放（使用 ${v?v.name:'系統預設語音'}）`); };
+    u.onend=()=>{ got=true; log(`${name}：播放結束`); };
+    u.onerror=e=>{ got=true; log(`${name}：錯誤 ${e.error||'未知'}`); };
+    KEEP.push(u); if(KEEP.length>6) KEEP.shift();
+    speechSynthesis.speak(u);
+    log(`${name}：已送出${v?'':'（找不到這個語言的語音包）'}`);
+    setTimeout(()=>{ if(!got) log(`${name}：5 秒內完全沒反應（語音引擎沒有回應）`); },5000);
+  }catch(e){ log(name+'：失敗 '+e.message); }
+});
+$('#bRe').onclick=()=>{ load(); log('重新讀取：共 '+voices.length+' 個語音包'); };
+if(HAS){ try{ speechSynthesis.addEventListener('voiceschanged',load); }catch(e){ speechSynthesis.onvoiceschanged=load; } }
+load(); setTimeout(load,1500);
+log('檢測頁已開啟');
+</script>
+</body>
+</html>
