@@ -68,6 +68,7 @@ async function info(){
     ['中文語音',yn(has('zh')+has('cmn')+has('yue'),(has('zh')+has('cmn')+has('yue'))+' 個','沒有')],
     ['英文語音',yn(has('en'),has('en')+' 個','沒有')],
     ['音效（叮咚）支援',yn(window.AudioContext||window.webkitAudioContext,'支援','不支援')],
+    ['靜音模式下仍可出聲',yn(!!navigator.audioSession,'支援','不支援（系統太舊，需關閉靜音）')],
     ['網路',yn(navigator.onLine,'有連線','離線')],
     ['系統語言',esc((navigator.languages||[navigator.language]).join(', '))],
     ['裝置資訊',esc(navigator.userAgent)]
@@ -75,8 +76,9 @@ async function info(){
   $('#info').innerHTML=rows.map(([k,v])=>`<tr><td class="k">${k}</td><td>${v}</td></tr>`).join('');
 }
 let au=null;
+function unmute(){ try{ if(navigator.audioSession){ navigator.audioSession.type='playback'; return true; } }catch(e){} return false; }
 $('#bChime').onclick=()=>{
-  try{
+  try{ unmute();
     if(!au){ const C=window.AudioContext||window.webkitAudioContext; if(!C){ log('叮咚：此瀏覽器不支援音效'); return; } au=new C(); }
     if(au.state==='suspended') au.resume();
     const t=au.currentTime;
@@ -91,6 +93,7 @@ const KEEP=[];
 document.querySelectorAll('button[data-l]').forEach(b=>b.onclick=()=>{
   const L=b.dataset.l, name=b.textContent;
   if(!HAS){ log(name+'：此瀏覽器不支援語音'); return; }
+  unmute();
   if(!voices.length) load();
   const p=L.slice(0,2).toLowerCase(), v=voices.find(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p))||(p==='zh'?voices.find(v=>/^(cmn|yue)/i.test(v.lang||'')):null);
   try{

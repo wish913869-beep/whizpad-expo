@@ -948,6 +948,8 @@ function pickVoice(){
   for(const p of VL[lang]){ const v=voices.find(v=>n(v).startsWith(p.toLowerCase())); if(v) return v; }
   return null;
 }
+/* iPad silent mode mutes web audio and speech; 'playback' lets them through like a video would (iPadOS 17+) */
+function unmute(){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} }
 function chime(){
   try{
     if(!au){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return; au=new C(); }
@@ -1061,7 +1063,7 @@ $('#track').addEventListener('click',e=>{
   if(sp){
     voice=!voice; sp.classList.toggle('on',voice);
     if(voice){
-      chime(); say(VON[lang]);                       // inside the tap: unlocks audio + speech on iPad
+      unmute(); chime(); say(VON[lang]);                       // inside the tap: unlocks audio + speech on iPad
       const b=document.getElementById('bub'), t=document.getElementById('bubT');
       const show=late=>{ const msg=voiceMsg(late); t.textContent=msg; b.classList.add('on'); holdBub=msg===VON[lang]?0:Date.now()+9000; };   // keep a warning up long enough to read
       show(); setTimeout(()=>{ if(voice) show(true); },1500);   // some tablets list their voices a moment later
