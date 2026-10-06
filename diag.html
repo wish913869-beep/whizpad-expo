@@ -60,8 +60,6 @@ function load(){
 }
 function has(p){ return voices.filter(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p)).length; }
 async function info(){
-  let ver='（讀不到）';
-  try{ const ks=await caches.keys(); ver=ks.filter(k=>k.startsWith('whizpad')).join(', ')||'沒有快取'; }catch(e){}
   const yn=(b,y,n)=>b?`<span class="ok">${y}</span>`:`<span class="bad">${n}</span>`;
   const rows=[
     ['瀏覽器支援語音',yn(HAS,'支援','不支援')],
@@ -71,7 +69,6 @@ async function info(){
     ['英文語音',yn(has('en'),has('en')+' 個','沒有')],
     ['音效（叮咚）支援',yn(window.AudioContext||window.webkitAudioContext,'支援','不支援')],
     ['網路',yn(navigator.onLine,'有連線','離線')],
-    ['簡報快取版本',esc(ver)],
     ['系統語言',esc((navigator.languages||[navigator.language]).join(', '))],
     ['裝置資訊',esc(navigator.userAgent)]
   ];
