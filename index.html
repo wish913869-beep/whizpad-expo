@@ -35,6 +35,7 @@
 html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;-webkit-text-size-adjust:100%;overscroll-behavior:none}
 body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 html[lang=ja] body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic","Meiryo",system-ui,sans-serif}
+html[lang=ko] body{font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;word-break:keep-all}
 html[lang=en] body{font-family:"Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif}
 b{font-weight:700;color:var(--ink)}
 img{display:block;max-width:100%;-webkit-user-drag:none}
@@ -292,7 +293,7 @@ ol.steps li::before{content:counter(st);width:20px;height:20px;border-radius:50%
   <button class="btn" id="bFs"></button>
   <button class="btn" id="bIdx"></button>
   <button class="btn" id="bNotes"></button>
-  <div class="lang" id="lang"><button data-l="zh">中</button><button data-l="en">EN</button><button data-l="ja">日</button></div>
+  <div class="lang" id="lang"><button data-l="zh">中</button><button data-l="en">EN</button><button data-l="ja">日</button><button data-l="ko">한</button></div>
 </header>
 <main class="deck" id="deck"><div class="track" id="track"></div></main>
 <button class="arrow prev" id="prev" aria-label="prev">‹</button>
@@ -310,6 +311,7 @@ const UI = {
   zh: { notes: '說明', index: '目錄', close: '關閉', tap: '點圖可放大', of: '/', swipe: '左右滑動換頁', full: '全螢幕' },
   ja: { notes: '解説', index: '目次', close: '閉じる', tap: '画像タップで拡大', of: '/', swipe: '左右スワイプでページ移動', full: '全画面' },
   en: { notes: 'Details', index: 'Index', close: 'Close', tap: 'Tap image to zoom', of: '/', swipe: 'Swipe left or right', full: 'Full screen' },
+  ko: { notes: '설명', index: '목차', close: '닫기', tap: '이미지를 탭하면 확대', of: '/', swipe: '좌우로 밀어 페이지 이동', full: '전체 화면' },
 };
 
 const SLIDES = [
@@ -336,6 +338,13 @@ const SLIDES = [
       lead: 'The mattress is the sensor — nothing to wear, no cables, watching over every resident around the clock.',
       stat: [['20', 'hospitals & care facilities'], ['~5,000', 'beds in operation (Taiwan, 2026)']],
       notes: "WhizPad is a pressure-relief mattress with a built-in sensor layer, used together with the AI CarePad care system. Residents wear nothing, and staff see the status of every bed in real time from the nurse station or a tablet.",
+    },
+    ko: {
+      kicker: 'WhizPad 스마트 매트리스 × 케어 모니터링 시스템',
+      title: 'WhizPad × AI CarePad',
+      lead: '매트리스 자체가 센서입니다. 착용할 것도, 배선도 필요 없이 24시간 모든 입소자를 지켜봅니다.',
+      stat: [['20', '병원·요양시설 도입'], ['약 5,000', '병상 가동 중 (대만, 2026년)']],
+      notes: "WhizPad는 센서층을 내장한 체압 분산 매트리스로, 케어 시스템 AI CarePad와 함께 사용합니다. 입소자는 아무것도 착용할 필요가 없고, 직원은 간호사실이나 태블릿에서 모든 침대의 상태를 실시간으로 확인할 수 있습니다.",
     },
   },
 
@@ -377,6 +386,18 @@ const SLIDES = [
       spec: ['Model SP-600', '90 × 192 × 12 cm', 'Bluetooth · Wi-Fi', 'AA × 2'],
       cap: { battery: 'Battery box: 2 × AA', receiver: 'Receiver', mattress: 'Waterproof medical cover' },
       notes: "The sensor layer sends data over Bluetooth to a receiver in the room, which forwards it over the network to AI CarePad. The mattress runs on ordinary AA batteries — no outlets or cables, nothing to trip over and nothing to pull loose.",
+    },
+    ko: {
+      title: '센서는 매트리스 안에',
+      bullets: [
+        '<b>무선·전원 불필요</b>: AA 건전지 2개로 약 3~6개월 사용 (사용 환경에 따라 다름)',
+        '<b>고장이 적은 일체형 구조</b>: 센서층이 폼 안에 들어 있어 노출된 배선이 없고, 의료용 방수 커버는 닦아서 청소 가능',
+        '<b>그 자체로 체압 분산 매트리스</b>: 메모리폼이 몸에 맞게 감싸 압력을 분산',
+      ],
+      flow: ['WhizPad 매트리스', 'Bluetooth', '수신기', 'Wi-Fi / LAN', 'AI CarePad', '간호사실 · 태블릿 · 스마트폰'],
+      spec: ['모델 SP-600', '90 × 192 × 12 cm', 'Bluetooth · Wi-Fi', 'AA 건전지 × 2'],
+      cap: { battery: '배터리 박스: AA 건전지 2개', receiver: '수신기', mattress: '의료용 방수 커버' },
+      notes: "매트리스 안의 센서층이 Bluetooth로 병실의 수신기에 데이터를 보내고, 수신기가 네트워크를 통해 AI CarePad로 전달합니다. 일반 AA 건전지로 작동하므로 콘센트나 배선이 필요 없어, 걸려 넘어지거나 선이 당겨져 고장 날 걱정이 없습니다.",
     },
   },
 
@@ -425,6 +446,20 @@ const SLIDES = [
       foot: 'A general comparison of approaches; actual features vary by brand and product.',
       notes: 'Facilities usually choose between three approaches: a sensor pad under the existing mattress, a contactless sensor such as radar, or a mattress with the sensor built in, like WhizPad. The first two avoid replacing the mattress but only monitor — there is no pressure relief, and radar cannot see pressure by body area. WhizPad is itself a pressure-relief mattress, shows the pressure map and early bed-exit signs, and runs on batteries with no cables.',
     },
+    ko: {
+      title: '침대 이탈 감지 방식 비교',
+      cols: [['매트리스 하부 센서 패드', '기존 매트리스 아래에 설치'], ['비접촉식', '레이더 등, 침대 옆이나 천장에 설치'], ['WhizPad', '체압 분산 매트리스에 센서층 내장']],
+      rows: [
+        ['매트리스 교체', ['t','불필요'], ['t','불필요'], ['t','WhizPad로 교체 (그 자체가 체압 분산 매트리스)']],
+        ['체압 분산·욕창 예방', ['n','없음 (기존 매트리스 그대로)'], ['n','없음'], ['y','메모리폼, 임상 연구에서 욕창 발생률 88% 감소']],
+        ['부위별 체압 분포', ['m','제품에 따라 다름'], ['n','체압 측정 불가'], ['y','5 × 6 체압 맵과 연속 압박 시간']],
+        ['이탈 전조 (일어나 앉기·침대 가장자리)', ['m','제품에 따라 다름'], ['m','제품에 따라 다름'], ['y','3단계 알림, 좌우 가장자리 구분']],
+        ['전원', ['m','제품에 따라 다름'], ['t','전원 필요'], ['y','AA 건전지 2개, 무선']],
+      ],
+      take: '센서 패드와 레이더는 감지만 합니다. WhizPad는 감지하면서 체압 분산 매트리스 역할도 합니다.',
+      foot: '일반적인 방식 비교이며, 각 브랜드의 실제 기능은 제품에 따라 다릅니다.',
+      notes: '시설에서 많이 쓰는 침대 이탈 감지 방식은 세 가지입니다. 기존 매트리스 아래에 까는 센서 패드, 레이더 같은 비접촉식 센서, 그리고 WhizPad처럼 센서를 매트리스에 내장한 방식입니다. 앞의 두 방식은 매트리스를 바꿀 필요가 없지만 감지만 할 뿐 체압 분산 효과가 없고, 레이더는 부위별 체압도 측정할 수 없습니다. WhizPad는 그 자체가 체압 분산 매트리스로, 체압 분포와 이탈 전조를 함께 파악할 수 있으며 건전지로 작동해 배선도 필요 없습니다.',
+    },
   },
 
   // 2 ─ 一個畫面掌握全樓層
@@ -459,6 +494,16 @@ const SLIDES = [
         'One-tap filters: alerts, offline, in bed / bedside / out of bed; a 24-hour timeline on every card',
       ],
       notes: 'Each card is one bed: the resident’s current posture on the left, the mattress pressure map in the middle, and status and battery below. A red frame is a triggered alert — it can only be cleared after a staff member confirms it, so nothing is missed. An orange frame is a status notice, such as out of bed, pressure risk or low battery. The buttons at the top filter to beds in alert or offline.',
+    },
+    ko: {
+      title: '한 화면으로 층 전체를 파악',
+      bullets: [
+        '침대마다 카드 한 장: <b>자세·체압 분포·상태·배터리</b>',
+        '<i class="dot r"></i><b>빨간 테두리 = 경보</b>: 직원이 확인해야만 해제됩니다',
+        '<i class="dot o"></i><b>주황 테두리 = 상태 알림</b>: 침대 이탈, 욕창 위험, 배터리 부족 등',
+        '원터치 필터: 경보 중·오프라인·침대 안/가장자리/이탈. 모든 카드에 24시간 타임라인',
+      ],
+      notes: '카드 한 장이 침대 하나를 나타냅니다. 왼쪽은 입소자의 현재 자세, 가운데는 매트리스의 체압 분포, 아래는 상태와 배터리 잔량입니다. 빨간 테두리는 발생한 경보로, 직원이 확인해야만 해제되므로 놓치는 일이 없습니다. 주황 테두리는 침대 이탈, 욕창 위험, 배터리 부족 같은 상태 알림입니다. 위쪽 버튼으로 경보 중이거나 오프라인인 침대만 볼 수 있습니다.',
     },
   },
 
@@ -495,6 +540,16 @@ const SLIDES = [
       ],
       notes: 'Most falls happen at the moment of getting out of bed. The system follows the pressure changes from lying, to sitting up, to the bed edge, to leaving the bed. Alerts for sitting up, bedside and out of bed can each be turned on to suit the resident — from sitting up for someone at high fall risk, or only out of bed for someone who moves independently.',
     },
+    ko: {
+      title: '3단계 이탈 알림, 입소자별로 설정',
+      stages: ['침대 안', '일어나 앉음', '침대 가장자리', '침대 이탈'],
+      bullets: [
+        'AI가 체압 변화를 분석해 <b>일어나 앉음·침대 가장자리(좌/우)·침대 이탈</b> 3단계를 감지',
+        '3단계 알림은 <b>입소자별로 따로 켤 수 있음</b>: 낙상 위험이 높으면 일어나 앉는 단계부터, 스스로 움직일 수 있으면 이탈만',
+        '일어서기 전에 알려 주므로 직원이 침대로 달려갈 시간을 확보',
+      ],
+      notes: '낙상은 대부분 침대에서 일어서는 순간에 일어납니다. 시스템은 체압 변화로 누워 있음 → 일어나 앉음 → 침대 가장자리 → 침대 이탈의 흐름을 판별하며, 일어나 앉음·가장자리·이탈 세 단계마다 알림을 설정할 수 있습니다. 낙상 위험이 높은 분은 일어나 앉는 단계부터, 스스로 움직일 수 있는 분은 이탈 알림만 켜는 식으로 입소자에 맞게 고를 수 있습니다.',
+    },
   },
 
   // 4 ─ 防壓傷
@@ -529,6 +584,16 @@ const SLIDES = [
       ],
       foot: 'One-year observational study of 254 high-risk ICU patients at a medical center (Bai et al., PLOS ONE, 2020)',
       notes: "Each square matches one zone of the mattress, and its color shows how long that zone has been under continuous pressure. When it lasts too long, staff are reminded to turn the resident. The memory-foam mattress itself cut pressure injuries by 88% in a medical-center study.",
+    },
+    ko: {
+      title: '압력을 눈으로 보고, 제때 체위 변경',
+      bullets: [
+        '5 × 6 체압 맵, 압박 시간별 색 구분: <b>2시간 미만 / 2~4시간 / 4시간 이상</b>',
+        '같은 부위가 너무 오래 눌리면 <b>체위 변경 알림</b>',
+        '메모리폼 매트리스: 임상 연구에서 <b>욕창 발생률 88% 감소</b>',
+      ],
+      foot: '메디컬센터 중환자실 욕창 고위험 환자 254명을 대상으로 한 1년간의 관찰 연구 (Bai et al., PLOS ONE, 2020)',
+      notes: "맵의 한 칸은 매트리스의 한 구역에 해당하며, 색은 그 부위가 연속으로 눌린 시간을 나타냅니다. 압박이 오래 이어지면 체위 변경을 알려 줍니다. 매트리스 자체도 메모리폼이며, 메디컬센터 연구에서 욕창 발생률이 88% 감소했습니다.",
     },
   },
 
@@ -565,6 +630,16 @@ const SLIDES = [
       ],
       notes: "A big screen at the nurse station can run in wall mode, so every resident on the floor is visible at a glance. When a bed’s status changes it is highlighted and announced by voice, so staff know where to go even while busy with something else.",
     },
+    ko: {
+      title: '간호사실 모니터 월로 야간 근무를 더 안심하게',
+      bullets: [
+        '<b>모니터 월 모드</b>: 간호사실 대형 화면에서 모든 입소자의 상황을 한눈에',
+        '<b>음성 안내</b>: 침대 이탈과 경보를 소리로 알려 주어 화면을 계속 볼 필요 없음',
+        '남성/여성 음성, 음량 조절 가능',
+        '먼저 화면으로 확인하고 필요한 침대로 — 야간 순회를 효율적으로',
+      ],
+      notes: "간호사실에 대형 화면을 연결해 모니터 월 모드로 바꾸면 층 전체 입소자의 상황을 한눈에 볼 수 있습니다. 침대 상태가 바뀌면 화면에 강조 표시되고 음성으로도 알려 주므로, 다른 일을 하는 중에도 어느 침대로 가야 할지 바로 알 수 있습니다.",
+    },
   },
 
   // 6 ─ 個別設定
@@ -600,6 +675,16 @@ const SLIDES = [
       ],
       notes: "Every resident needs different alerts — for example, free to walk during the day but needing bed-exit alerts at night. Each alert can be switched per morning, noon and night shift with adjustable thresholds for turning, restlessness, low activity and prolonged bed time, and when a new resident needs it, one tap turns all alerts on quickly — or staff can switch on only the ones that are needed.",
     },
+    ko: {
+      title: '입소자별·근무조별 알림 설정',
+      bullets: [
+        '오전/오후/야간 근무조별로 <b>낙상·욕창·침대 안·가장자리·이탈</b> 알림을 켜고 끄기',
+        '기준값 조절: 체위 변경, 불안정한 움직임, 저활동, 장시간 누워 있음, 이탈 시간',
+        '새 입소자에게 필요하면 <b>원터치로 알림 일괄 켜기</b>. 필요 없으면 쓰지 않아도 됩니다',
+        '불필요한 경보를 줄여 경보 피로를 방지',
+      ],
+      notes: "필요한 알림은 입소자마다 다릅니다. 예를 들어 낮에는 자유롭게 걷지만 밤에만 이탈 알림이 필요한 분도 있습니다. 각 알림은 오전·오후·야간 근무조별로 켜고 끌 수 있고, 체위 변경·불안정한 움직임·저활동·장시간 누워 있음의 기준 시간도 조절할 수 있습니다. 새 입소자에게 필요하면 원터치로 모든 알림을 빠르게 켤 수 있고, 필요한 항목만 켤 수도 있습니다.",
+    },
   },
 
   // 7 ─ 照護紀錄
@@ -634,6 +719,16 @@ const SLIDES = [
         'Real data to share with families',
       ],
       notes: "Time in bed, sleep and activity records build up automatically for each resident — no handwritten logs. Trends can be viewed by day or week and exported to CSV. In one real case, staff noticed a resident was in bed three hours longer than usual; an early doctor visit found cellulitis.",
+    },
+    ko: {
+      title: '돌봄 기록 자동 생성',
+      bullets: [
+        '입소자별 <b>누워 있는 시간·깊은/얕은 수면·활동량·이탈 횟수</b>',
+        '일간/주간 보기로 전체 입소자를 한눈에 비교',
+        '<b>CSV 내보내기</b> (원본 이벤트 또는 96구간 요약) — 인수인계, 평가, 연구에 활용',
+        '데이터로 가족에게도 알기 쉽게 설명',
+      ],
+      notes: "누워 있는 시간, 수면, 활동 기록이 입소자별로 자동으로 쌓여 손으로 기록할 필요가 없습니다. 일간·주간 추세를 볼 수 있고 CSV로 내보낼 수도 있습니다. 실제 사례로, 한 입소자가 평소보다 3시간 더 누워 있는 것을 직원이 알아차려 일찍 진료를 받았고, 봉와직염으로 진단되었습니다.",
     },
   },
 
@@ -673,6 +768,17 @@ const SLIDES = [
       cap: 'With a wearable connected, heart rate, temperature and BP appear on each bed card',
       notes: "Nothing the facility already has needs replacing: resident data is imported from the HIS / NIS, alerts can be passed to a nurse-call system that offers an open interface, existing cameras can be linked so staff check the video when an alert fires, and heart rate, temperature and blood pressure from wearables with an open API appear on each bed card.",
     },
+    ko: {
+      title: '기존 시스템과 연동',
+      cards: [
+        ['his', 'HIS / NIS', '병원 HIS / NIS와 연동해 <b>입소자 정보를 자동으로 가져오기</b> — 중복 입력 불필요'],
+        ['bell', '너스콜', '너스콜 시스템이 연동 인터페이스를 공개한 경우 <b>경보를 너스콜로 전달</b>할 수 있어, 기존 업무 흐름 그대로 사용'],
+        ['cam', '카메라', '시설에 설치된 카메라와 연동: <b>경보가 울리면 먼저 영상으로 확인</b>한 뒤 출동 여부를 판단'],
+        ['vital', '생체 신호', '매트리스는 심박수·체온·혈압을 측정하지 않지만, <b>API가 공개된 웨어러블 기기</b>와 연동하면 침대 카드에 표시'],
+      ],
+      cap: '웨어러블 기기를 연동하면 침대 카드에 심박수·체온·혈압이 표시됩니다',
+      notes: "시설의 기존 장비를 바꿀 필요가 없습니다. 입소자 정보는 HIS / NIS에서 자동으로 가져오고, 너스콜 시스템이 연동 인터페이스를 공개했다면 경보를 전달할 수 있습니다. 기존 카메라와 연동하면 경보 시 바로 영상으로 확인할 수 있고, 심박수·체온·혈압은 API가 공개된 웨어러블 기기와 연동해 침대 카드에 표시합니다.",
+    },
   },
 
   // 9 ─ 導入與管理
@@ -711,6 +817,17 @@ const SLIDES = [
       ],
       notes: "Installation takes four steps — lay the mattress, connect the receiver to the network, train staff, go live — with no cabling work. Once the mattress is laid down, the system detects nearby unpaired pads; an admin picks the bed and taps Pair. Beds are organized by floor and room, admissions, transfers and discharges are logged, and low batteries are flagged in advance.",
     },
+    ko: {
+      title: '도입은 간단하게, 관리는 편하게',
+      steps: ['매트리스 깔기', '네트워크 연결', '직원 교육', '운영 시작'],
+      bullets: [
+        '<b>깔기만 하면 바로 사용</b>: 근처 매트리스를 자동으로 감지, 침대를 고르고 원터치로 연결',
+        '층 › 병실 › 침대 단위로 관리. 입소·전실·퇴소는 모두 작업 기록에 저장',
+        '배터리 잔량과 오프라인 상태를 실시간 확인, 배터리가 떨어지기 전에 미리 알림',
+        '화면 언어는 <b>중국어·영어·일본어</b> 지원',
+      ],
+      notes: "도입은 네 단계입니다. 매트리스를 깔고, 수신기를 네트워크에 연결하고, 직원 교육을 마치면 운영을 시작합니다. 배선 공사는 필요 없습니다. 매트리스를 깔면 시스템이 근처의 아직 연결되지 않은 매트리스를 자동으로 감지하고, 관리자가 침대를 골라 '연결'을 누르면 바로 사용할 수 있습니다. 침대는 층·병실별로 관리되며, 입소·전실·퇴소는 모두 작업 기록으로 남고, 배터리가 부족해지면 미리 알려 줍니다.",
+    },
   },
 
   // 10 ─ 實績與認證
@@ -739,6 +856,14 @@ const SLIDES = [
       patents: ['Taiwan I611801 · I536936', 'USA US8905929B2', 'Japan JP6479075', 'China CN108209310A (application published)'],
       certs: 'ISO 9001 · ISO 13485 · CE · FCC',
       notes: "In Taiwan, 20 hospitals and care facilities use the system on about 5,000 beds, including major medical centers such as Taipei and Kaohsiung Veterans General Hospitals. The technology is patented in Taiwan, the US and Japan, and certified to ISO 9001, ISO 13485, CE and FCC.",
+    },
+    ko: {
+      title: '도입 실적과 인증',
+      stat: [['20', '병원·시설'], ['약 5,000', '병상 가동 중'], ['4', '개국 특허']],
+      sites: 'Taipei Veterans General Hospital, Kaohsiung Veterans General Hospital, Guandu Hospital, Far Eastern Memorial Hospital 등',
+      patents: ['대만 I611801 · I536936', '미국 US8905929B2', '일본 JP6479075', '중국 CN108209310A (출원 공개)'],
+      certs: 'ISO 9001 · ISO 13485 · CE · FCC',
+      notes: "대만에서 20개 병원과 요양시설이 도입해 약 5,000개 병상에서 가동 중이며, 타이베이·가오슝 Veterans General Hospital 등 주요 메디컬센터가 포함됩니다. 관련 기술은 대만·미국·일본에서 특허를 취득했고, ISO 9001, ISO 13485, CE, FCC 인증을 받았습니다.",
     },
   },
 
@@ -769,6 +894,14 @@ const SLIDES = [
       qr: 'Visit our website',
       notes: "For Taiwan and other regions, please contact SEDA directly; customers in Japan can contact our distributor, INOAC Living. Scan the QR code to visit our website.",
     },
+    ko: {
+      title: '문의',
+      maker: '제조사', jp: '일본 판매 대리점',
+      addr: 'No. 56, Bade Rd., Yingge Dist., New Taipei City, Taiwan', tel: '+886-2-2261-5177', fax: '+886-2-2678-3386',
+      free: '',
+      qr: '공식 웹사이트',
+      notes: "대만 및 기타 지역은 SEDA(世大化成)로 직접 문의해 주십시오. 일본 고객은 일본 판매 대리점 INOAC Living으로 문의해 주십시오. QR 코드를 스캔하면 공식 웹사이트로 이동합니다.",
+    },
   },
 ];
 
@@ -798,6 +931,11 @@ const MON = {
         st: { ok: 'Normal', fall: 'Fall risk', out: 'Out of bed', turn: 'Turn reminder', off: 'Offline' },
         say: { fall: n => `Bed ${n} — fall risk`, out: n => `Bed ${n} — out of bed`, turn: n => `Bed ${n} — please turn the resident` },
         count: ['All beds', 'In alert'] },
+  ko: { wall: '간호사실 모니터 월', names: ['김〇준','이〇은','박〇호','최〇영','정〇우','강〇진','조〇현','윤〇아','장〇희','임〇서'],
+        pos: { inBed: '침대 안', onBed: '일어나 앉음', bedsideR: '오른쪽 가장자리', bedsideL: '왼쪽 가장자리', outOfBed: '침대 이탈', offline: '오프라인' },
+        st: { ok: '정상', fall: '낙상 위험', out: '침대 이탈', turn: '체위 변경', off: '오프라인' },
+        say: { fall: n => `${n}번 침대, 낙상 위험입니다`, out: n => `${n}번 침대, 침대에서 이탈했습니다`, turn: n => `${n}번 침대, 체위 변경이 필요합니다` },
+        count: ['전체 침대', '경보 중'] },
 };
 </script>
 <script>
@@ -805,9 +943,9 @@ const MON = {
 const $=s=>document.querySelector(s);
 let lang='zh', cur=0;
 try{ const s=localStorage.getItem('cp_lang'); if(s&&UI[s]) lang=s; }catch(e){}
-const h=location.hash.match(/#(zh|en|ja)?-?(\d+)?/); if(h){ if(h[1]) lang=h[1]; if(h[2]) cur=Math.min(+h[2],SLIDES.length-1); }
+const h=location.hash.match(/#(zh|en|ja|ko)?-?(\d+)?/); if(h){ if(h[1]) lang=h[1]; if(h[2]) cur=Math.min(+h[2],SLIDES.length-1); }
 
-const src=k=>{ const [t,n]=k.split(':'); return IMG[t==='L'?lang+'/'+n:'photos/'+n]||''; };
+const src=k=>{ const [t,n]=k.split(':'); return IMG[t==='L'?(lang==='ko'?'en':lang)+'/'+n:'photos/'+n]||''; };   // no Korean app UI yet: Korean shows the English screenshots
 const im=(k,cls='')=>`<img class="${cls}" src="${src(k)}" alt="" draggable="false">`;
 const shot=k=>`<div class="shot" data-z="${k}">${im(k)}</div>`;
 const SV=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -882,9 +1020,9 @@ function render(s){
       ${shot(s.images[0])}<p class="cap">${t.cap}</p></div>`;
   case 'proof': return `<div class="proof"><div class="txt"><h2>${t.title}</h2>
       <div class="stats">${t.stat.map(([a,b])=>`<div><strong>${a}</strong><span>${b}</span></div>`).join('')}</div>
-      <dl><div><dt>${{ja:'主な導入先',en:'Selected sites',zh:'主要採用單位'}[lang]}</dt><dd>${t.sites}</dd></div>
-      <div><dt>${{ja:'特許',en:'Patents',zh:'專利'}[lang]}</dt><dd>${t.patents.map(p=>`<span>${p}</span>`).join('')}</dd></div>
-      <div><dt>${{ja:'認証',en:'Certifications',zh:'認證'}[lang]}</dt><dd>${t.certs}</dd></div></dl></div>
+      <dl><div><dt>${{ja:'主な導入先',en:'Selected sites',zh:'主要採用單位',ko:'주요 도입처'}[lang]}</dt><dd>${t.sites}</dd></div>
+      <div><dt>${{ja:'特許',en:'Patents',zh:'專利',ko:'특허'}[lang]}</dt><dd>${t.patents.map(p=>`<span>${p}</span>`).join('')}</dd></div>
+      <div><dt>${{ja:'認証',en:'Certifications',zh:'認證',ko:'인증'}[lang]}</dt><dd>${t.certs}</dd></div></dl></div>
       <div class="pv"><div class="mosaic">${['P:field2','P:field3','P:field1','P:room'].map(k=>`<figure data-z="${k}">${im(k)}</figure>`).join('')}</div>
       <div class="certs"><img src="${IMG['photos/cert_row1']}" alt=""><img src="${IMG['photos/cert_row2']}" alt=""></div></div></div>`;
   case 'contact': {
@@ -894,7 +1032,7 @@ function render(s){
           <li>${SEDA.web}　${SEDA.mail}</li>${t.free?`<li>${t.free}</li>`:''}</ul></div>
           <figure class="qr"><img src="${IMG['photos/qr_web']}" alt=""><figcaption>${t.qr}</figcaption></figure></div></div>`;
     const ino=`<div class="box"><h3>${t.jp}</h3><img class="inoac" src="${IMG['photos/logo_inoac']}" alt="">
-        ${INOAC.offices.map(([c,a,p])=>`<div class="office"><b>${lang==='en'?({'東京':'Tokyo','名古屋':'Nagoya'})[c]:c}</b><span>${a}</span><b>TEL ${p}</b></div>`).join('')}</div>`;
+        ${INOAC.offices.map(([c,a,p])=>`<div class="office"><b>${lang==='en'?({'東京':'Tokyo','名古屋':'Nagoya'})[c]:lang==='ko'?({'東京':'도쿄','名古屋':'나고야'})[c]:c}</b><span>${a}</span><b>TEL ${p}</b></div>`).join('')}</div>`;
     return `<div class="contact"><h2>${t.title}</h2>
       <div class="logos"><img src="${IMG['photos/logo_whizpad']}" alt=""><img src="${IMG['photos/logo_imager37']}" alt=""></div>
       ${lang==='ja'?ino+seda:seda+ino}
@@ -925,20 +1063,20 @@ function monStep(){
 }
 /* voice: iPad Safari only plays audio/speech that is first started inside a tap,
    so the speaker button speaks a confirmation and plays a chime right away to unlock both. */
-const HAS_TTS='speechSynthesis' in window, VL={zh:['zh-TW','zh-HK','zh','cmn','yue'],ja:['ja-JP','ja'],en:['en-US','en']};
-const VON={zh:'語音提醒已開啟',ja:'音声通知をオンにしました',en:'Voice alerts on'};
-const VNO={zh:'此瀏覽器不支援語音，僅播放提示音',ja:'このブラウザは音声読み上げ非対応のため、通知音のみ鳴らします',en:'Speech is not supported here; chime only'};
+const HAS_TTS='speechSynthesis' in window, VL={zh:['zh-TW','zh-HK','zh','cmn','yue'],ja:['ja-JP','ja'],en:['en-US','en'],ko:['ko-KR','ko']};
+const VON={zh:'語音提醒已開啟',ja:'音声通知をオンにしました',en:'Voice alerts on',ko:'음성 알림이 켜졌습니다'};
+const VNO={zh:'此瀏覽器不支援語音，僅播放提示音',ja:'このブラウザは音声読み上げ非対応のため、通知音のみ鳴らします',en:'Speech is not supported here; chime only',ko:'이 브라우저는 음성 읽기를 지원하지 않아 알림음만 재생합니다'};
 /* the device must have a voice for the slide language; without one the browser silently reads with another language's voice */
-const VMISS={zh:'這台平板沒有中文語音，播報會無聲或念錯',ja:'この端末には日本語の音声がないため、読み上げが無音か不正確になります',en:'This device has no English voice, so alerts may be silent or misread'};
+const VMISS={zh:'這台平板沒有中文語音，播報會無聲或念錯',ja:'この端末には日本語の音声がないため、読み上げが無音か不正確になります',en:'This device has no English voice, so alerts may be silent or misread',ko:'이 기기에는 한국어 음성이 없어 음성 안내가 들리지 않거나 부정확할 수 있습니다'};
 const UA=navigator.userAgent, OS=(/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1))?'ios':/Android/.test(UA)?'and':/Windows/.test(UA)?'win':'';
 const VHOW={
-  ios:{zh:'請到 設定 › 輔助使用 › 語音內容 › 聲音 › 中文 下載語音',ja:'設定 › アクセシビリティ › 読み上げコンテンツ › 声 › 日本語 で音声をダウンロードしてください',en:'Download one in Settings › Accessibility › Spoken Content › Voices › English'},
-  and:{zh:'請到 設定 › 文字轉語音輸出 › Google 語音服務 › 安裝語音資料 › 中文(台灣)',ja:'設定 › テキスト読み上げの出力 › Google 音声サービス › 音声データをインストール › 日本語 を追加してください',en:'Add it in Settings › Text-to-speech output › Speech Services by Google › Install voice data › English'},
-  win:{zh:'請到 設定 › 時間與語言 › 語音 › 新增語音 安裝中文',ja:'設定 › 時刻と言語 › 音声認識 › 音声を追加 で日本語を入れてください',en:'Add it in Settings › Time & language › Speech › Add voices'}};
-const VNONE={zh:'這台平板沒有任何語音引擎，目前只播提示音',ja:'この端末には音声読み上げエンジンがないため、通知音のみ鳴らします',en:'This device has no speech engine, so only the chime plays'};
-const VENG={and:{zh:'請從 Play 商店安裝「Google 語音服務」，再到 設定 › 文字轉語音輸出 選它並下載語音',ja:'Play ストアで「Google 音声サービス」をインストールし、設定 › テキスト読み上げの出力 で選択してください',en:'Install Speech Services by Google from the Play Store, then pick it in Settings › Text-to-speech output'}};
+  ios:{zh:'請到 設定 › 輔助使用 › 語音內容 › 聲音 › 中文 下載語音',ja:'設定 › アクセシビリティ › 読み上げコンテンツ › 声 › 日本語 で音声をダウンロードしてください',en:'Download one in Settings › Accessibility › Spoken Content › Voices › English',ko:'설정 › 손쉬운 사용 › 콘텐츠 말하기 › 음성 › 한국어 에서 음성을 다운로드하세요'},
+  and:{zh:'請到 設定 › 文字轉語音輸出 › Google 語音服務 › 安裝語音資料 › 中文(台灣)',ja:'設定 › テキスト読み上げの出力 › Google 音声サービス › 音声データをインストール › 日本語 を追加してください',en:'Add it in Settings › Text-to-speech output › Speech Services by Google › Install voice data › English',ko:'설정 › 텍스트 음성 변환 출력 › Google 음성 서비스 › 음성 데이터 설치 › 한국어 를 추가하세요'},
+  win:{zh:'請到 設定 › 時間與語言 › 語音 › 新增語音 安裝中文',ja:'設定 › 時刻と言語 › 音声認識 › 音声を追加 で日本語を入れてください',en:'Add it in Settings › Time & language › Speech › Add voices',ko:'설정 › 시간 및 언어 › 음성 › 음성 추가 에서 한국어를 설치하세요'}};
+const VNONE={zh:'這台平板沒有任何語音引擎，目前只播提示音',ja:'この端末には音声読み上げエンジンがないため、通知音のみ鳴らします',en:'This device has no speech engine, so only the chime plays',ko:'이 기기에는 음성 읽기 엔진이 없어 알림음만 재생합니다'};
+const VENG={and:{zh:'請從 Play 商店安裝「Google 語音服務」，再到 設定 › 文字轉語音輸出 選它並下載語音',ja:'Play ストアで「Google 音声サービス」をインストールし、設定 › テキスト読み上げの出力 で選択してください',en:'Install Speech Services by Google from the Play Store, then pick it in Settings › Text-to-speech output',ko:'Play 스토어에서 Google 음성 서비스를 설치한 뒤 설정 › 텍스트 음성 변환 출력 에서 선택하세요'}};
 function voiceMsg(late){ if(!HAS_TTS) return VNO[lang];
-  if(late&&!voices.length){ const h=(VENG[OS]||VHOW[OS]||{})[lang]; return VNONE[lang]+(h?(lang==='en'?'. ':'。')+h:''); } if(voices.length&&!pickVoice()) { const h=(VHOW[OS]||{})[lang]; return VMISS[lang]+(h?(lang==='en'?'. ':'。')+h:''); } return VON[lang]; }
+  if(late&&!voices.length){ const h=(VENG[OS]||VHOW[OS]||{})[lang]; return VNONE[lang]+(h?(lang==='en'||lang==='ko'?'. ':'。')+h:''); } if(voices.length&&!pickVoice()) { const h=(VHOW[OS]||{})[lang]; return VMISS[lang]+(h?(lang==='en'||lang==='ko'?'. ':'。')+h:''); } return VON[lang]; }
 let voices=[], au=null; const KEEP=[];
 function loadVoices(){ try{ voices=speechSynthesis.getVoices()||[]; }catch(e){} }
 if(HAS_TTS){ loadVoices(); try{ speechSynthesis.addEventListener('voiceschanged',loadVoices); }catch(e){ speechSynthesis.onvoiceschanged=loadVoices; } }
@@ -1003,7 +1141,7 @@ function monSync(){ sizeTv();
 }
 
 /* ── text size: 標準 / 大 / 特大, remembered on this device ── */
-const FS=[1,1.14,1.28], FSN={zh:['字級：標準','字級：大','字級：特大'],ja:['文字：標準','文字：大','文字：特大'],en:['Text: M','Text: L','Text: XL']};
+const FS=[1,1.14,1.28], FSN={zh:['字級：標準','字級：大','字級：特大'],ja:['文字：標準','文字：大','文字：特大'],en:['Text: M','Text: L','Text: XL'],ko:['글자: 보통','글자: 크게','글자: 아주 크게']};
 let fsi=0; try{ const v=+localStorage.getItem('cp_fs'); if(v>=0&&v<FS.length) fsi=v; }catch(e){}
 function applyFs(){ document.documentElement.style.setProperty('--fs',FS[fsi]); fsLabel(); }
 function fsLabel(){ const b=document.getElementById('bFs'); if(b){ b.textContent=FSN[lang][fsi]; b.classList.toggle('on',fsi>0); } }
@@ -1076,7 +1214,7 @@ $('#track').addEventListener('click',e=>{
 });
 $('#lbX').onclick=e=>{ e.stopPropagation(); $('#lb').classList.remove('on'); };
 /* zoom viewer: pinch, double-tap, drag, mouse wheel; tap the dark area to close */
-const ZH={zh:'雙指縮放・點兩下放大・點空白處關閉',ja:'ピンチで拡大・ダブルタップで拡大・余白タップで閉じる',en:'Pinch or double-tap to zoom · tap outside to close'};
+const ZH={zh:'雙指縮放・點兩下放大・點空白處關閉',ja:'ピンチで拡大・ダブルタップで拡大・余白タップで閉じる',en:'Pinch or double-tap to zoom · tap outside to close',ko:'두 손가락으로 확대・두 번 탭하여 확대・빈 곳을 탭하면 닫기'};
 const lbI=$('#lbImg'), lbS=$('#lbSc'); let zs=1,zx=0,zy=0; const pts=new Map(); let g0=null, lastTap=0, tapMoved=false, downAt=null;
 function zApply(){ lbI.style.transform=`translate(${zx}px,${zy}px) scale(${zs})`; }
 function zReset(){ zs=1; zx=0; zy=0; zApply(); }
